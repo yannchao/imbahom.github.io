@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用shader时的优化方法 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="og:type" content="blog">
+<meta name="og:title" content="使用shader时的优化方法">
+<meta name="og:url" content="http://yoursite.com/2011/08/17/使用shader时的优化方法/">
+<meta name="og:image">
+<meta name="og:site_name" content="Hexo">
+<meta name="og:description" content="一般来说，定位渲染通道瓶颈的方法就是改变渲染通道每个步骤的工作量, 如果吞吐量也改变了, 那个步骤就是瓶颈. 找到了瓶颈就要想办法消除瓶颈, 可以减少该步骤的工作量, 增加其他步骤的工作量.
+一般在光栅化之前的瓶颈称作”transform bound”, 三角形设置处理后的瓶颈称作”fill bound”
+定位瓶颈的办法
+
+1. 改变帧缓冲或者渲染目标(Render Target)的颜色深度(16">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="http://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-使用shader时的优化方法" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2011/08/17/使用shader时的优化方法/" class="article-date">
+  <time datetime="2011-08-17T15:39:13.000Z" itemprop="datePublished">Aug 17 2011</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/3D/">3D</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用shader时的优化方法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一般来说，定位渲染通道瓶颈的方法就是改变渲染通道每个步骤的工作量, 如果吞吐量也改变了, 那个步骤就是瓶颈. 找到了瓶颈就要想办法消除瓶颈, 可以减少该步骤的工作量, 增加其他步骤的工作量.</p>
+<p>一般在光栅化之前的瓶颈称作”transform bound”, 三角形设置处理后的瓶颈称作”fill bound”</p>
+<p>定位瓶颈的办法
+<a id="more"></a>
+1. 改变帧缓冲或者渲染目标(Render Target)的颜色深度(16 到 32 位), 如果帧速改变了, 那么瓶颈应该在这里.</p>
+<p>2. 否则试试改变贴图大小和贴图过滤设置, 如果帧速变了,那么瓶颈应该是在贴图这里.</p>
+<p>3. 否则改变分辨率.如果帧速改变了, 那么改变一下pixel shader的指令数量, 如果帧速变了, 那么瓶颈应该就是pixel shader. 否则瓶颈就在光栅化过程中.</p>
+<p>4. 否则, 改变顶点格式的大小, 如果帧速改变了, 那么瓶颈应该在显卡带宽上.</p>
+<p>5. 如果以上都不是, 那么瓶颈就在CPU这一边.</p>
+<p>优化方法36条:</p>
+<p>1. 尽量减少无用的顶点数据, 比如贴图坐标, 如果有Object使用2组有的使用1组, 那么不 要将他们放在一个vertex buffer中, 这样可以减少传输的数据量.</p>
+<p>2. 使用多个streamsource, 比如SkinMesh渲染, 可以把顶点坐标和法线这些每一帧都要修改的数据放在一个动态VB中, 其它不需要修改的(如贴图坐标)放到一个静态VB中, 这样就减少了数据传输量.</p>
+<p>3. 尽量使用16位的索引缓冲,避免32位的. 一方面浪费带宽, 一方面也不是所有的显卡都支持32位的索引缓冲.</p>
+<p>4. 可以考虑使用vertex shader来计算静态VB中的数据.比如SkinMesh的顶点可以放到vectex shader中计算, 这样就可以避免每一帧都从AGP内存中向显存传送数据. 这样也可以使用静态VB了.</p>
+<p>5. 坚决避免使用Draw**UP一族的函数来绘制多边形.</p>
+<p>6. 在设计程序之前好好规划一下显卡内存的使用, 确保framebuffer, 贴图, 静态VB能够正好放入显卡的本地内存中.</p>
+<p>7. 尽量使顶点格式大小是32字节的倍数.可以考虑使用压缩过的顶点格式然后用vertex shader去解. 或者留下冗余的部分, 使顶点大小刚好使32字节的倍数.</p>
+<p>8. 顶点在顶点缓冲中的顺序尽量符合绘制的顺序, 考虑使用strips来代替list.</p>
+<p>9. 如果可能尽量多的使用static vertex buffer代替dynamic vertex buffer</p>
+<p>10. 动态VB使用DISCARD参数来lock更新, 使用NOOVERWRITE来添加.尽量不要使用不带参数的lock调用(0)</p>
+<p>11. 尽量减少lock的次数, 有些东西并不一定非要每一帧都更新VB, 比如人物动画一般每秒钟更新30次VB基本上就够了.</p>
+<p>12. 如果是因为需要绘制的顶点数据太多了可以考虑使用LOD, 但是现在的显卡的绘制能力都很强劲, 所以需要权衡一下LOD是否能够带来相应的好处, 如果过分的强化LOD很可能将瓶颈转移到CPU这边.</p>
+<p>13. 避免过多的顶点计算,比如过多的光源, 过于复杂的光照计算(复杂的光照模型), 纹理自动生成的开启也会增加顶点的计算量. 如果贴图坐标变换矩阵不是单位矩阵, 也会造成顶点计算量的增加, 所以如果纹理变换已经结束, 记得要将纹理变换矩阵设为单位矩阵同时调整贴图坐标.</p>
+<p>14. 避免Vertex shader指令数量太多或者分支过多, 尽量减少vertex shader的长度和复杂程度. 尽量使用swizzling代替mov</p>
+<p>15. 如果图象质量方面的计算(pixel shader)范围很大, 并且很复杂, 可以考虑试试全屏反走样.说不定更快.</p>
+<p>16. 尽量按照front – back的顺序来绘制.</p>
+<p>17. 在shader中判断Z值可以避免绘制不可见的象素, 但是nvidia建议简单的shader不要这么做.(Don’t do this in a simple shader)</p>
+<p>18. 如果可能, 尽量使用vertex shader来代替pixel shader.将计算从逐象素变成逐顶点.</p>
+<p>19. 尽量降低贴图的大小.过大的贴图可能造成贴图cache过载, 从而导致贴图cache命中降低.过大的贴图会导致显存过载, 这时候贴图是从系统内存中取的.</p>
+<p>20. 只要可能就用16位色的贴图, 如环境贴图或者shadow map.它们用32位色的贴图实在是浪费.</p>
+<p>21. 考虑使用DXT 贴图压缩</p>
+<p>22. 如果可能,使用简单的贴图过滤或者mip map, 除非必要否则尽量不要使用三线过滤和各项异性过滤. light map 和 环境贴图基本上都不需要使用它们.</p>
+<p>23. 只有真正需要修改的贴图才使用Dynamic, 并且使用DISCRAD和WRITEONLY来lock</p>
+<p>24. 太多的帧缓冲读写可以考虑关闭Z-Writes如有些多pass的渲染中的后续pass或者粒子系统等半透明几何物体（如果可以）</p>
+<p>25. 可能的话尽量使用alpha test代替alpha blending</p>
+<p>26. 如果不需要stencil buffer就尽量使用16位的Z buffer</p>
+<p>27. 减小RenderTarget 贴图的大小, 如shadow map 环境贴图. 可能根本不需要那么大效果就很好.</p>
+<p>28. Stencil 和 Z buffer 尽量一起clear. 他们本来就是一块缓冲.</p>
+<p>29. 尽量减少渲染状态的切换, 尽量一次画尽可能多的多边形.（根据显卡性能决定最多画多少， 不过一般再多也不会多到哪里去。 除非你根本不需要贴图和渲染状态的切换）</p>
+<p>30. 尽量使用shader来代替Fixed Pipeline.</p>
+<p>31. 尽量使用shader来实现来取代Multipass渲染效果.</p>
+<p>32. 尽量优先先建立重要的资源, 如Render target, shaders, 贴图, VB, IB等等.以免显存过载的时候它们被创建到系统内存中.</p>
+<p>33. 坚决不要在渲染循环中调用创建资源</p>
+<p>34. 按照shader和贴图分组后再渲染.先按照shaders分组再按贴图.</p>
+<p>35. Color Stencil Z buffer尽量在一次Clear调用中清除.</p>
+<p>36. 一个Vertex buffer 的大小在2M-4M之间最好.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2011/08/17/使用shader时的优化方法/" data-id="gjqpkpc75oombizd" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2011/08/20/谁说空指针不安全/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          谁说空指针不安全!
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2011/07/21/stack-memory/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">stack memory</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/fragment/">fragment</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/fragment/">fragment</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/fragment/">fragment</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/pattern design/">pattern design</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/fragment/">fragment</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/pattern design/">pattern design</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/vim/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/fragment/">fragment</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/pattern design/">pattern design</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/vim/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">30</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/cygwin/">cygwin</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hhkb/">hhkb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ndk/">ndk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/键盘/">键盘</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/cygwin/" style="font-size: 10.00px;">cygwin</a><a href="/tags/hhkb/" style="font-size: 10.00px;">hhkb</a><a href="/tags/ndk/" style="font-size: 10.00px;">ndk</a><a href="/tags/vim/" style="font-size: 20.00px;">vim</a><a href="/tags/键盘/" style="font-size: 10.00px;">键盘</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">January 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12">December 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10">October 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09">September 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08">August 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07">July 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06">June 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07">July 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/04">April 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/03">March 2012</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02">February 2012</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/01">January 2012</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12">December 2011</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/11">November 2011</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09">September 2011</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08">August 2011</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/07">July 2011</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06">June 2011</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05">May 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04">April 2011</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/03">March 2011</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02">February 2011</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/01">January 2011</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/12">December 2010</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/11">November 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2014/01/23/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2014/01/12/hhkb-pro-2-is-shipping/">hhkb pro 2 is shipping</a>
+          </li>
+        
+          <li>
+            <a href="/2013/12/04/让人愉悦的颜色/">让人愉悦的颜色</a>
+          </li>
+        
+          <li>
+            <a href="/2013/11/28/正则批量添加播放声效代码/">正则批量添加播放声效代码</a>
+          </li>
+        
+          <li>
+            <a href="/2013/10/27/又是一年换机时/">又是一年换机时</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2014 John Doe<br>
+      Powered by <a href="http://zespia.tw/hexo/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script type="text/javascript" src="/js/script.js"></script>
+  </div>
+</body>
+</html>

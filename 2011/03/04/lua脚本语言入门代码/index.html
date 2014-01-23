@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Lua脚本语言入门代码 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="og:type" content="blog">
+<meta name="og:title" content="Lua脚本语言入门代码">
+<meta name="og:url" content="http://yoursite.com/2011/03/04/lua脚本语言入门代码/">
+<meta name="og:image">
+<meta name="og:site_name" content="Hexo">
+<meta name="og:description" content="网上看到的,估计以后可能会有用,先留着
+近来游戏基本做的差不多了,大约5月底左右可以内测?现在正在快马加鞭增强其脚本功能.考虑到效率和库大小,功能等原因,暂决定使用&lt;魔兽世界&gt;采用的Lua语言进行嵌入支持.5555,我可爱的Python和Ruby没被采用,怨念啊...下面是学习的一些代码,均在LuaEdit5.0上运行通过.
+--&gt; 实验类型
+print( type(&quot;">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="http://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-lua脚本语言入门代码" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2011/03/04/lua脚本语言入门代码/" class="article-date">
+  <time datetime="2011-03-03T17:18:07.000Z" itemprop="datePublished">Mar 4 2011</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/fragment/">fragment</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Lua脚本语言入门代码
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>网上看到的,估计以后可能会有用,先留着</p>
+<p>近来游戏基本做的差不多了,大约5月底左右可以内测?现在正在快马加鞭增强其脚本功能.考虑到效率和库大小,功能等原因,暂决定使用&lt;魔兽世界&gt;采用的Lua语言进行嵌入支持.5555,我可爱的Python和Ruby没被采用,怨念啊...下面是学习的一些代码,均在LuaEdit5.0上运行通过.<a id="more"></a></p>
+<p>--&gt; 实验类型</p>
+<p>print( type(&quot;HelloWorld&quot;) );
+print( type(10.4 * 3) );
+print( type(print) );
+print( type(type) );
+print( type(true) );
+print( type(nil) );
+print( type(type(x)) );</p>
+<p>print(&quot;-------------------------------&quot;)
+--&gt; 实现同一变量对应多种类型</p>
+<p>print( type(a) )
+a = 10
+print( type(a) )
+a = &quot;a string!!&quot;
+print( type(a) )
+a = print
+a( type(a) )</p>
+<p>print(&quot;-------------------------------&quot;)
+--&gt; 实现字符串部分替代保存和部分特殊转义符</p>
+<p>a = &quot;My game is n&quot;&#39;sobso good&quot; ;
+b = string.gsub( a, &quot;ga&quot;, &quot;ha&quot; );
+print( a );
+print( b );</p>
+<p>print(&quot;-------------------------------&quot;)
+--&gt; 实现Asc码和字符之间的替换表示</p>
+<p>print(&quot;97102a&quot;)    ;
+print(&quot;100&quot; + 2 * &quot;5&quot; ) ;</p>
+<p>print(&quot;-------------------------------&quot;)
+--&gt; 用于测试字符串链接,数字自动转换字符串</p>
+<p>print(&quot;Hello&quot;..&quot;World&quot;);
+sString = [[
+你好,现在是在测试大段的String类型,
+将使用这两个符号进行表示
+测试希望能够顺利结束.
+]];
+print( sString );</p>
+<p>print( 10 .. 20 );</p>
+<p>line = 100
+n = tonumber(line)
+if ( n == nil )
+then error(&quot;您输入的值&quot; .. line .. &quot;无法正常转换为浮点数!&quot;)
+else print( n^2 )
+end</p>
+<p>print( 10 == &quot;10&quot; )
+print( tostring(10) == &quot;10&quot; )</p>
+<p>print(&quot;-------------------------------&quot;)
+--&gt; 不等于符是 ~=   不再是 !=</p>
+<p>if( a ~= nil )
+then print(a)
+else print(&quot; a为空 &quot;)
+end</p>
+<p>print(&quot;-------------------------------&quot;)
+--&gt; == 号是进行两个变量的地址进行比较,所以2例中的a和c是不相等的</p>
+<p>a = 1;
+b = a;
+c = 1;
+if( a == b )
+then print( &quot;a=b&quot; )
+else print( &quot;a~=b&quot; )
+end</p>
+<p>if( a == c )
+then print( &quot;a=c&quot; )
+else print( &quot;a~=c&quot; )
+end</p>
+<p>a = {};
+a.x = 1;
+a.y = 2;</p>
+<p>b = {};
+b = a;</p>
+<p>c = {};
+c.x = 1;
+c.y = 2;</p>
+<p>if( a == b )
+then print( &quot;a=b&quot; )
+else print( &quot;a~=b&quot; )
+end</p>
+<p>if( a == c )
+then print( &quot;a=c&quot; )
+else print( &quot;a~=c&quot; )
+end</p>
+<p>print(&quot;-------------------------------&quot;)</p>
+<p>print( 2 &lt; 5 )
+--&gt; print( a &lt; b )       --&gt; Lua不会自动将char转换为int
+--&gt; print( a &lt; 1 )
+print( &quot;2&quot; + 1 &lt; 2 )
+--&gt; print( &quot;3&quot; &lt; 2 )     --&gt; 不合法
+print( &quot;3&quot; &gt; &quot;2&quot; )       --&gt; 合法</p>
+<p>print(&quot;-------------------------------&quot;)
+--[[</p>
+<ul>
+<li>逻辑运算符认为false和nil是假,0和其他一切都为true</li>
+<li>and 和 or 的预算结果不再是true或false,Lua中,它类似于一个三元运算符</li>
+<li>a and b   若a为false,则返回a,否则返回b</li>
+<li>a or b    若a为true,则返回a,否则返回b
+--]]</li>
+</ul>
+<p>print( 4 and 5 )
+print( nil and 13 )
+print( false and 13 )
+print( 4 or 5 )
+print( false or 5 )</p>
+<p>--[[</p>
+<ul>
+<li>实用技巧: 若a为空值则将b赋给a</li>
+<li>a = a or b</li>
+<li>另外,and 的优先级比 or 高.</li>
+<li>not 的结果只有true或false
+--]]</li>
+</ul>
+<p>print( not 0 )           --&gt; 注意,0也是true
+print( not false )
+print( not nil )
+print( not true )
+print( not hahahaha )    --&gt; hahahaha变量未赋值,认为是nil
+print( not not true )
+a = &quot;hahahaha&quot;
+print( not not a )
+if( a == &quot;hahahaha&quot; )
+then print(&quot; a还是&quot;hahahaha&quot; &quot;);
+else print(&quot; a已经是true &quot;);
+end
+print(&quot;-------------------------------&quot;)
+--&gt; 表的使用
+a = { 1, 3, 6, 0 }
+print( a[2] );         --&gt; 注意,结果是3,说明Lua表索引是以1开始的,不是C/C++一样以0开始</p>
+<p>print(&quot;-------------------------------&quot;)
+--&gt; 表是动态的,允许顺时进行修改</p>
+<p>w = { x = 0, y = 0, label = &quot;呵呵&quot; }
+x = {}
+w[1] = &quot;嘿嘿&quot;
+x.f = w
+print(w[1])
+print(x[1])
+print(x.f[1])</p>
+<p>print(&quot;-------------------------------&quot;)
+--&gt; function函数</p>
+<p>function Fun( a, b )
+local c = a^2 + b^2 ;
+return math.sqrt(c)
+end</p>
+<p>print( Fun( 3, 4 ))   ;</p>
+<p>print(&quot;-------------------------------&quot;)
+--&gt; Loops循环,从第一个参数到第二个参数,第三个参数是步长,中间以逗号分割</p>
+<p>for i = 1,5,2
+do   print(&quot;现在的I值是&quot; .. i )
+end</p>
+<p>print(&quot;-------------------------------&quot;)
+--&gt; Loops循环+Conditionals条件</p>
+<p>for i = 1,6
+do if i &lt; 3
+then print(&quot;数字很小&quot;)
+elseif i &lt; 5
+then print(&quot;数字一般&quot;)
+else print(&quot;数字比较大&quot;)
+end
+end
+--[[</p>
+<ul>
+<li>Lua不近然ObjectPascal,没必要每个begin对应一个end</li>
+<li>即使多个if,也是一个end就足够
+--]]
+print(&quot;-------------------------------&quot;)</li>
+</ul>
+<p>myData = { 2 }
+myData[0] = &quot;111&quot;
+myData[&quot;yumen&quot;] = &quot;duzhi&quot;</p>
+<p>for key,value in myData
+do print( key .. &quot;=&quot; .. value )
+end
+--[[</p>
+<ul>
+<li>Lua允许以字符串做为下标,这点十分类似STL中的map映射
+*
+--]]
+print(&quot;-------------------------------&quot;)</li>
+</ul>
+<p>--&gt; 嵌套Table 以及 两种访问模式
+myTable = { color = &quot;blue&quot;, sex = 1, x = 0;
+{ x = 1, y = 2 }, { x = 2, y = 3 } ,
+{ x = 3, y = 4 }, { x = 4, y = 5 }
+}
+print( myTable.color );
+print( myTable[&quot;color&quot;]) ;
+print( myTable[1].x );</p>
+<p>print(&quot;-------------------------------&quot;)</p>
+<p>--&gt; 支持不定参数
+function Fun( ... )
+for i = 1, arg.n
+do print( arg[i] )
+end
+end</p>
+<p>Fun(&quot;1&quot;, &quot;2&quot;, dhsag, 1, nil, true )
+--[[</p>
+<ul>
+<li>传来的参数自动的存放在了一个名为 arg 的Table中了</li>
+<li>其中arg.n就是arg中存放参数的个数
+--]]</li>
+</ul>
+<p>print(&quot;-------------------------------&quot;)</p>
+<p>--&gt; 以table表做参数
+function Fun( t )
+for k,v in t
+do print( k .. &quot;=&quot; .. v )
+end
+end</p>
+<p>Fun({ x = 10, y = 20 });
+Fun{ x = 10, y = 20 };
+--[[</p>
+<ul>
+<li>虽然仅仅是调用单个Table做为参数</li>
+<li>调用处不加小括号也可以,但是不支持这种写法.可读性低.
+--]]</li>
+</ul>
+<p>print(&quot;-------------------------------&quot;)</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2011/03/04/lua脚本语言入门代码/" data-id="z7453n8bvl670h2t" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2011/03/04/我应该是个比较自虐的人吧/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          我应该是个比较自虐的人吧!?
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2011/03/04/some-optimizing-measures/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">some optimizing measures</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/fragment/">fragment</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/fragment/">fragment</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/fragment/">fragment</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/pattern design/">pattern design</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/fragment/">fragment</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/pattern design/">pattern design</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/vim/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/3D/">3D</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/3D/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/">C/C++</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/Fun/">Fun</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/">fragment</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C/C++/fragment/Fun/">Fun</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Lua/">Lua</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/">assembly</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/assembly/C/C++/">C/C++</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d-x/">cocos2d-x</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/fragment/">fragment</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/pattern design/">pattern design</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/vim/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活就是这么美好and操蛋/">生活就是这么美好and操蛋</a><span class="category-list-count">30</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/cygwin/">cygwin</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hhkb/">hhkb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ndk/">ndk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/键盘/">键盘</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/cygwin/" style="font-size: 10.00px;">cygwin</a><a href="/tags/hhkb/" style="font-size: 10.00px;">hhkb</a><a href="/tags/ndk/" style="font-size: 10.00px;">ndk</a><a href="/tags/vim/" style="font-size: 20.00px;">vim</a><a href="/tags/键盘/" style="font-size: 10.00px;">键盘</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">January 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12">December 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10">October 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09">September 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08">August 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07">July 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06">June 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07">July 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/04">April 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/03">March 2012</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02">February 2012</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/01">January 2012</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12">December 2011</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/11">November 2011</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09">September 2011</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08">August 2011</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/07">July 2011</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06">June 2011</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05">May 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04">April 2011</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/03">March 2011</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02">February 2011</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/01">January 2011</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/12">December 2010</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/11">November 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2014/01/23/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2014/01/12/hhkb-pro-2-is-shipping/">hhkb pro 2 is shipping</a>
+          </li>
+        
+          <li>
+            <a href="/2013/12/04/让人愉悦的颜色/">让人愉悦的颜色</a>
+          </li>
+        
+          <li>
+            <a href="/2013/11/28/正则批量添加播放声效代码/">正则批量添加播放声效代码</a>
+          </li>
+        
+          <li>
+            <a href="/2013/10/27/又是一年换机时/">又是一年换机时</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2014 John Doe<br>
+      Powered by <a href="http://zespia.tw/hexo/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script type="text/javascript" src="/js/script.js"></script>
+  </div>
+</body>
+</html>
